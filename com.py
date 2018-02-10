@@ -7,7 +7,6 @@ from tkinter.scrolledtext import *
 import time
 import rot13
 import base64
-import sys
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = int(6666)
@@ -71,8 +70,16 @@ def execute():
         t1.config(state=DISABLED)
 
 
-def recv_screenshit():
-    pass
+def get_screenshot():
+    try:
+        s.send(b'aW1hZ2UgcXVlcnk=')
+    except Exception as e:
+        messagebox.showwarning(title='Error', message=e)
+        return
+    raw_image = s.recv(4096)
+    if raw_image == b'':
+        pass
+    print(raw_image)
 
 
 def show_password():
@@ -107,6 +114,7 @@ b2 = Button(text='login', command=partial(pass_auth))
 b3 = Button(text='exit', command=quit)
 b4 = Button(text='Execute on server', command=execute)
 b5 = Button(text='Show password', command=show_password)
+b6 = Button(text='Get Screen', command=get_screenshot)
 t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70)
 l1.pack()
 l2.pack()
@@ -121,6 +129,7 @@ e3.pack()
 b4.pack()
 l5.pack()
 t1.pack()
+b6.pack()
 b3.pack()
 try:
     t1.config(state=DISABLED)
