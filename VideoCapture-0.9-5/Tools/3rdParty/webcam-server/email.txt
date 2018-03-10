@@ -1,0 +1,14 @@
+From: Don Garrett <garrett@bgb.cc>
+----------------------------------
+
+  I've found your video capture libraries to be very useful! Thank you for producing them and making them available!
+
+  Based on your library, I've written a very simple web server that captures a fresh image on every image request. It's very, very simple, and can only serve captured images, not the wrapper site.
+
+  I did it as part of a quickie demo for a potential client, but thought that it might prove useful to other people. Please feel free to discard it, add it into the Tools section of a future VideoCapture release, or whatever you feel is best.
+
+  It was written with and tested on Python 2.2. It should work on older versions, but I'm not sure how far back.
+
+--
+Don Garrett                             http://www.bgb.cc/garrett/
+BGB Consulting                                      garrett@bgb.cc

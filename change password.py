@@ -1,6 +1,5 @@
-import pickle
-from Tkinter import *
-import tkMessageBox as Messagebox
+from tkinter import *
+import tkinter.messagebox as messagebox
 from rot13 import Rot13
 import os
 import base64
@@ -10,15 +9,16 @@ rot = Rot13()
 
 def change_password():
     new = e1.get()
+    if new == '':
+        messagebox.showerror('Please input password.', 'Please input password.')
+        return
     try:
-        f = open(os.getcwd() + 'password.pc', mode='w+')
-        obj = pickle.dumps(rot.encodes(new))
-        encode = base64.b64encode(obj)
-        f.write(encode)
-        f.close()
-        Messagebox.showinfo(title='Successful', message='Successfully saved password, your password is: ' + new)
+        with open(os.getcwd() + '/password.pc', mode='w+') as f:
+            f.write(base64.b64encode(bytes(rot.encodes(new).encode('utf8'))).decode('utf8'))
+            f.close()
+        messagebox.showinfo(title='Successful', message='Successfully saved password, your password is: ' + new)
     except Exception as e:
-            Messagebox.showerror(title='Error', message=e)
+        messagebox.showerror(title='Error', message=e)
     return
 
 

@@ -1,0 +1,20 @@
+<HTML>
+<HEAD>
+    <TITLE>-{IMGNAME}-</TITLE>
+    <META HTTP-EQUIV="Refresh" CONTENT="-{INTERVAL}-;URL=-{HTMLURL}-">
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <SCRIPT LANGUAGE="JavaScript">
+        function doreload() {
+            location.reload()
+            window.setTimeout("doreload()", -{JSINTERVAL} -);
+        }
+
+        window.setTimeout("doreload()", -{JSINTERVAL} -);
+    </SCRIPT>
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+page refreshes every -{INTERVAL}- seconds<BR>
+<IMG SRC="-{IMGSRC}-" NAME="-{IMGNAME}-"><BR>
+powered by <A HREF="http://videocapture.sourceforge.net/">VideoCapture</A>
+</BODY>
+</HTML>

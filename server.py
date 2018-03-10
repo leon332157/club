@@ -1,16 +1,28 @@
-import pickle as pickle
 import socket
 import subprocess
 from rot13 import Rot13
 import base64
 import os
 import pyscreenshot
-import threading
+from PIL import Image
+import time
+
 rot = Rot13()
+global password
+try:
+    with open(os.getcwd() + '/password.pc', 'r+') as f:
+        raw_password = f.read().encode('utf8')
+        password = rot.decodes(base64.b64decode(raw_password).decode('utf8'))
+except Exception as e:
+    print(e)
+    print("Please set password use 'change password.py'")
+    exit(1)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
 s.bind(('127.0.0.1', 6666))
 s.listen(100)
-print('Server listening on {}:{}'.format('127.0.0.1', 6666))
+img_serv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # initiallize socket
+img_serv.bind(('127.0.0.1', 6667))
+print('\nServer listening on {0}:{1} and {0}:{2}'.format('127.0.0.1', 6666, 6667))
 try:
     conn, addr = s.accept()
 except KeyboardInterrupt:
@@ -19,25 +31,15 @@ except KeyboardInterrupt:
     exit(0)
 print('connection from: ' + str(addr))
 
-global password
-try:
-    with open(os.getcwd() + '/password.pc', 'r+') as f:
-        raw_password = f.read()
-        password = rot.decodes(pickle.loads(base64.b64decode(raw_password)))
-except Exception as e:
-    print(e)
-    print("Please set password use 'change password.py'")
-    exit(1)
-
 
 def main():
     try:
         data = conn.recv(1024).decode('utf8')
-        if str(data).startswith('ZXhpdCgp=='):
+        if data == 'ZXhpdCgp==':
             s.close()
             print('Connection Closed')
             exit()
-        if str(data).startswith('Y29tbWFuZA=='):
+        if data == 'Y29tbWFuZA==':
             if not log:
                 conn.send(bytes(('b3V0cHV0Cg==' + 'You are not logged in, please login first.').encode('utf8')))
                 print('Not logged in')
@@ -51,17 +53,22 @@ def main():
                 output = str(e)
             conn.send(bytes(('b3V0cHV0Cg==' + output).encode('utf8')))
             return True
-        if rot.decodes(pickle.loads(base64.b64decode(data))) == password:
+        if rot.decodes(base64.b64decode(data).decode('utf8')) == password:
             conn.send(bytes('correct'.encode('utf8')))
             print('correct password')
             return True
-        if data == b'aW1hZ2UgcXVlcnk=':
-            img = pyscreenshot.grab()
-            img.save(os.getcwd() + '/scessnshot.png')
-            del img
-            img = open(os.getcwd() + '/screenshot.png')
-            raw_img = base64.encode(img)
-            conn.send(raw_img)
+        if data == 'aW1hZ2UgcXVlcnk=':
+            while True:
+                time.sleep(0.25)
+                pyscreenshot.grab_to_file(os.getcwd() + '/screenshot.png')
+                raw_image = Image.open(os.getcwd() + '/screenshot.png')
+                w, h = raw_image.size
+                proc_img = raw_image.resize((int(w / 4), int(h / 4)))
+                proc_img.save(os.getcwd() + '/screenshot.png')
+                with open(os.getcwd() + '/screenshot.png', mode='rb') as bytes_img_file:
+                    bytes_img = bytes_img_file.read()
+                    conn.send(base64.b64encode(bytes_img))
+                    print('Sent')
         else:
             conn.send(bytes('incorrect'.encode('utf8')))
             print('incorrect password')
@@ -75,8 +82,8 @@ def main():
 log = False
 while True:
     # try:
-        log = main()  # Continuously get return value True or False to verify login.
-        continue
+    log = main()  # Continuously get return value True or False to verify login.
+    continue
 # except Exception as e:
 # print(e)
 #   s.close()

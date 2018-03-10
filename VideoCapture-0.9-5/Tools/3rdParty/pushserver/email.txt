@@ -1,0 +1,29 @@
+From: Don Kimber <kimber@fxpal.com>
+-----------------------------------
+
+Hi Markus,
+
+I have found your VideoCapture module really useful.  Thanks!!  I've
+used it from python, and also found the source code helpful for some
+other C++ stuff I was doing that didn't involve Python.
+
+I had a problem with the displayCapturePinProperties - basically things
+crashed when I called that.  I tweaked the code for that to make it look
+a little more like the code for displayCaptureFilterProperties, which
+called teardown at a different point, and then it seemed to work ok.
+
+I also added a method for setting the resolution of the capture directly
+without requiring a dialog.
+
+I have no idea if you are interested, but I'm sending you the slightly
+modified versions.  Also, here is a simple python HTTP server that can
+deliver the images, and can also do server push, which could be played
+in a netscape browser.  At low resolution (320x240) I get about 9fps
+with it.
+
+Anyway, if you don't want these source files, toss them in the
+bitbucket.  But in anycase, I thank you for making VideoCapture
+available.
+
+Cheers,
+Don Kimber

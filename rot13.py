@@ -26,47 +26,35 @@ class Rot13():
     def encode(self, string):
         self.l = []
         for each in string:
-            if each.isdigit() == False:
                 if self.dic_en.get(each) == None:
                     self.l.append(each)
                 else:
                     self.l.append(self.dic_en.get(each))
-            else:
-                self.l.append(each)
         return self.l
 
     def decode(self, string):
         self.l = []
         for each in string:
-            if each.isdigit() == False:
                 if self.dic_dn.get(each) == None:
                     self.l.append(each)
                 else:
                     self.l.append(self.dic_dn.get(each))
-            else:
-                self.l.append(each)
         return self.l
 
     def encodes(self, string):
         self.l = []
         for each in string:
-            if each.isdigit() == False:
                 if self.dic_en.get(each) == None:
                     self.l.append(each)
                 else:
                     self.l.append(self.dic_en.get(each))
-            else:
-                self.l.append(each)
         return ''.join(self.l)
 
     def decodes(self, string):
         self.l = []
         for each in string:
-            if each.isdigit() == False:
                 if self.dic_dn.get(each) == None:
                     self.l.append(each)
                 else:
                     self.l.append(self.dic_dn.get(each))
-            else:
-                self.l.append(each)
         return ''.join(self.l)

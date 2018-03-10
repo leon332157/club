@@ -7,6 +7,7 @@ from tkinter.scrolledtext import *
 import time
 import rot13
 import base64
+import os
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = int(6666)
@@ -19,7 +20,7 @@ def pass_auth():
         if password == '':
             messagebox.showinfo('Input password', 'Please input password.')
             return
-        s.send(base64.b64encode(pickle.dumps(rot.encodes(password))))
+        s.send(bytes(base64.b64encode(bytes(rot.encodes(password).encode('utf8')))))
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
@@ -76,10 +77,16 @@ def get_screenshot():
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
-    raw_image = s.recv(4096)
-    if raw_image == b'':
-        pass
-    print(raw_image)
+    s.settimeout(10)
+    while True:
+        raw_image = s.recv(256456).decode('utf8')
+        if raw_image == b'':
+            pass
+        with open(os.getcwd() + '/sav.png', 'w+b') as f:
+            raw_image = base64.b64decode(raw_image)
+            f.write(raw_image)
+            print('recvd')
+        time.sleep(0.25)
 
 
 def show_password():
@@ -91,7 +98,7 @@ def show_password():
 
 def quit():
     try:
-        s.send('ZXhpdCgp==')
+        s.send(b'ZXhpdCgp==')
     except Exception as e:
         pass
     s.close()
@@ -106,6 +113,7 @@ l2 = Label(root1, text='Input server ip here:')
 l3 = Label(root1, text='Input server password here:')
 l4 = Label(root1, text='Command execute on server')
 l5 = Label(root1, text='Execute log', font=('', 25))
+# l6 = Label(root1,image=os.getcwd()+'screenshot.png')
 e1 = Entry(root1)
 e2 = Entry(root1, show='*')
 e3 = Entry(root1)
@@ -136,5 +144,4 @@ try:
     root1.resizable(width=False, height=False)
     root1.mainloop()
 except KeyboardInterrupt:
-    s.close()
-    print('Connection Closed')
+    quit()
