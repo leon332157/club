@@ -1,11 +1,9 @@
-import socket
-import subprocess
+import subprocess, threading, socket, base64, os, pyscreenshot, time, sys
 from rot13 import Rot13
-import base64
-import os
-import pyscreenshot
 from PIL import Image
-import time
+from test_serv import Server
+
+test_s = Server()
 
 rot = Rot13()
 global password
@@ -20,9 +18,7 @@ except Exception as e:
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
 s.bind(('127.0.0.1', 6666))
 s.listen(100)
-img_serv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # initiallize socket
-img_serv.bind(('127.0.0.1', 6667))
-print('\nServer listening on {0}:{1} and {0}:{2}'.format('127.0.0.1', 6666, 6667))
+print('\nServer listening on {0}:{1}'.format('127.0.0.1', 6666))
 try:
     conn, addr = s.accept()
 except KeyboardInterrupt:
@@ -58,17 +54,35 @@ def main():
             print('correct password')
             return True
         if data == 'aW1hZ2UgcXVlcnk=':
-            while True:
-                time.sleep(0.25)
-                pyscreenshot.grab_to_file(os.getcwd() + '/screenshot.png')
-                raw_image = Image.open(os.getcwd() + '/screenshot.png')
-                w, h = raw_image.size
-                proc_img = raw_image.resize((int(w / 4), int(h / 4)))
-                proc_img.save(os.getcwd() + '/screenshot.png')
-                with open(os.getcwd() + '/screenshot.png', mode='rb') as bytes_img_file:
-                    bytes_img = bytes_img_file.read()
-                    conn.send(base64.b64encode(bytes_img))
+            t = threading.Thread(target=test_s.start)
+            t.setDaemon(True)
+            t.start()
+            s1 = socket.socket()
+            s1.connect(('127.0.0.1', 6667))
+            conn.send(b'size_qu')
+            if not conn.recv(256) == b'gs':
+                time.sleep(1)
+            pyscreenshot.grab_to_file(os.getcwd() + '/screenshot.png')
+            raw_image = Image.open(os.getcwd() + '/screenshot.png')
+            w, h = raw_image.size
+            proc_img = raw_image.resize((int(w / 4), int(h / 4)))
+            proc_img.save(os.getcwd() + '/screenshot.png')
+            with open(os.getcwd() + '/screenshot.png', mode='rb') as bytes_img_file:
+                img = bytes_img_file.read()
+                siz = s1.send(img)
+                print('siz conf')
+                print(siz)
+                conn.send(('si.' + str(siz)).encode('utf8'))
+                if not conn.recv(256) == b'conf':
+                    time.sleep(1)
+
+                else:
+                    print('c size conf')
+                    time.sleep(3)
+                    conn.send(img)
+                    print(img)
                     print('Sent')
+                    s1.send(b'stop')
         else:
             conn.send(bytes('incorrect'.encode('utf8')))
             print('incorrect password')

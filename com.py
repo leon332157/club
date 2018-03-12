@@ -1,5 +1,4 @@
 import socket
-import pickle
 import tkinter.messagebox as messagebox
 from tkinter import *
 from functools import partial
@@ -8,7 +7,7 @@ import time
 import rot13
 import base64
 import os
-
+from PIL import Image, ImageTk
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = int(6666)
 rot = rot13.Rot13()
@@ -78,15 +77,20 @@ def get_screenshot():
         messagebox.showwarning(title='Error', message=e)
         return
     s.settimeout(10)
-    while True:
-        raw_image = s.recv(256456).decode('utf8')
-        if raw_image == b'':
-            pass
-        with open(os.getcwd() + '/sav.png', 'w+b') as f:
-            raw_image = base64.b64decode(raw_image)
-            f.write(raw_image)
-            print('recvd')
-        time.sleep(0.25)
+    if not s.recv(256) == b'size_qu':
+        time.sleep(1)
+    s.send(b'gs')
+    raw = s.recv(1024).decode('utf8')
+    if str(raw).startswith('si.'):
+        img_siz = int(raw.split('.')[1]) + 2000
+        s.send(b'conf')
+        print(img_siz)
+        raw_image = s.recv(img_siz)
+        print(raw_image)
+        print(sys.getsizeof(raw_image))
+        f = open(os.getcwd() + '/sav.png', 'w+b')
+        f.write(raw_image)
+        print('recvd')
 
 
 def show_password():
@@ -113,7 +117,7 @@ l2 = Label(root1, text='Input server ip here:')
 l3 = Label(root1, text='Input server password here:')
 l4 = Label(root1, text='Command execute on server')
 l5 = Label(root1, text='Execute log', font=('', 25))
-# l6 = Label(root1,image=os.getcwd()+'screenshot.png')
+l6 = Label(root1)
 e1 = Entry(root1)
 e2 = Entry(root1, show='*')
 e3 = Entry(root1)
@@ -138,6 +142,7 @@ b4.pack()
 l5.pack()
 t1.pack()
 b6.pack()
+l6.pack()
 b3.pack()
 try:
     t1.config(state=DISABLED)
