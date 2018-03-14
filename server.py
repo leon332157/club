@@ -68,6 +68,9 @@ def main():
             print('correct password')
             return True
         if data == 'aW1hZ2UgcXVlcnk=':
+            if not log:
+                conn.send(b'not')
+                return False
             time.sleep(1)
             pyscreenshot.grab_to_file(os.getcwd() + '/screenshot.png')
             raw_image = Image.open(os.getcwd() + '/screenshot.png')

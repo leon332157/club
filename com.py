@@ -79,6 +79,9 @@ def get_screenshot():
         messagebox.showwarning(title='Error', message=e)
         return
     s.settimeout(10)
+    if s.recv(1024) == b'not':
+        messagebox.showinfo(title='login', message='Please login first')
+        return
     if s.recv(1024) == b'l1':
         s.send(b'l1conf')
     raw_each_len = s.recv(65535)
