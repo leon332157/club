@@ -10,6 +10,7 @@ from rot13 import Rot13
 from PIL import Image
 import threading
 import name_server
+import progressbar
 
 rot = Rot13()
 global password
@@ -22,6 +23,9 @@ except Exception as e:
     print("Please set password use 'change password.py'")
     exit(1)
 name = input('Set name for server:')
+if not name:
+    name = 'foo'
+print('name: {}'.format(name))
 NameServer = name_server.Name_Server(name)
 t = threading.Thread(target=NameServer.start)
 t.setDaemon(True)
@@ -51,27 +55,31 @@ def main():
                 conn.send(('b3V0cHV0Cg==' + 'You are not logged in, please login first.').encode('utf8'))
                 print('Not logged in')
                 return False
-            raw_command = data.split('.')[1]
+            raw_command = data.split('Y29tbWFuZA==.')[1]
             command = raw_command.split(' ')
             print('executing: ' + raw_command)
             try:
                 process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                output = process.stdout.read().decode('utf8')
-                if output.encode('utf8') == b'':
-                    output = process.stderr.read().decode('utf8')
+                output = process.stdout.read()
+                if output == b'':
+                    output = process.stderr.read()
             except (subprocess.CalledProcessError, FileNotFoundError) as e:
-                output = str(e)
-            conn.send(('b3V0cHV0Cg==' + output).encode('utf8'))
+                output = str(e).encode('utf8')
+            conn.send((b'b3V0cHV0Cg==' + output))
             return True
         if rot.decodes(base64.b64decode(data).decode('utf8')) == password:
             conn.send(bytes('correct'.encode('utf8')))
             print('correct password')
             return True
         if data == 'aW1hZ2UgcXVlcnk=':
-            if not log:
-                conn.send(b'not')
-                return False
-            time.sleep(1)
+            if conn.recv(1024) == b'log check':
+                if not log:
+                    conn.send(b'not')
+                    print('Not logged in')
+                    return False
+                else:
+                    conn.send(b'pass')
+            bar = progressbar.ProgressBar(max_value=progressbar.UnknownLength)
             pyscreenshot.grab_to_file(os.getcwd() + '/screenshot.png')
             raw_image = Image.open(os.getcwd() + '/screenshot.png')
             w, h = raw_image.size
@@ -79,23 +87,30 @@ def main():
             proc_img.save(os.getcwd() + '/screenshot.png')
             with open(os.getcwd() + '/screenshot.png', mode='rb') as bytes_img_file:
                 img = base64.b64encode(bytes_img_file.read())
-                base64_list = textwrap.wrap(img.decode('utf8'), 400)
+                base64_list = textwrap.wrap(img.decode('utf8'), 300)
                 each_len = []
                 for each in base64_list:
                     each_len.append(len(each))
                 print('data ready')
             conn.send(b'l1')
+            print('sent hello')
             if not conn.recv(1024) == b'l1conf':
                 time.sleep(1)
+            print('recvd hello')
             conn.send(pickle.dumps(each_len))
             if not conn.recv(1024) == b'l1sconf':
                 time.sleep(1)
+            print('client size confirmed')
             if conn.recv(1024) == b'start':
-                for each in base64_list:
+                print('Start sending')
+                for each in bar(base64_list):
                     conn.send(each.encode('utf8'))
                     if not conn.recv(1024) == b'conf':
                         time.sleep(1)
-            print(len(img))
+                    time.sleep(0.001)
+            print('\nsent segments: {}'.format(len(base64_list)))
+            del bar
+            return True
         else:
             conn.send('incorrect'.encode('utf8'))
             print('incorrect password')

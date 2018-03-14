@@ -9,7 +9,7 @@ class Name_Server():
         self.name = name
 
     def start(self):
-        print('name serv start')
+        print('name server start')
         conn, addr = self.s.accept()
         print(addr)
         while True:

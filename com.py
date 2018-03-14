@@ -9,11 +9,19 @@ import base64
 import os
 from PIL import Image, ImageTk
 import pickle
+import progressbar
+def init():
+    global s
+    global rot
+    global utf8
+    global port
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    port = int(6666)
+    rot = rot13.Rot13()
+    utf8 = 'utf8'
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-port = int(6666)
-rot = rot13.Rot13()
-utf8 = 'utf8'
+
+init()
 
 
 def pass_auth():
@@ -36,6 +44,7 @@ def pass_auth():
 
 
 def connect():
+    global s
     ip = e1.get()
     if not ip == '':
         pass
@@ -46,9 +55,12 @@ def connect():
         s.settimeout(4)
         s.connect((str(ip), port))
         messagebox.showinfo(title='connected', message='Successfully connected!')
+        return s
     except Exception as e:
-        type, value, trace = sys.exc_info()
-        messagebox.showwarning(title='Error', message=value)
+        messagebox.showwarning(title='Error', message=e)
+        s.close()
+        del s
+        init()
 
 
 def execute():
@@ -63,7 +75,7 @@ def execute():
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
-    raw_output = s.recv(1024).decode('utf8')
+    raw_output = s.recv(65535).decode('utf8')
     if raw_output.startswith('b3V0cHV0Cg=='):
         t1.config(state=NORMAL)
         output = '{} command:{}\n{}\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), command,
@@ -73,12 +85,15 @@ def execute():
 
 
 def get_screenshot():
+
     try:
         s.send(b'aW1hZ2UgcXVlcnk=')
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
-    s.settimeout(10)
+    bar = progressbar.ProgressBar(max_value=progressbar.UnknownLength)
+    s.settimeout(20)
+    s.send(b'log check')
     if s.recv(1024) == b'not':
         messagebox.showinfo(title='login', message='Please login first')
         return
@@ -89,13 +104,17 @@ def get_screenshot():
     s.send(b'l1sconf')
     s.send(b'start')
     raw_list = list()
-    for each in each_len:
+    for each in bar(each_len):
         raw_list.append(s.recv(each + 100))
         s.send(b'conf')
+        time.sleep(0.1)
+    print('\nrecived segments {}'.format(len(raw_list)))
     pic = b''.join(raw_list)
     f = open(os.getcwd() + '/sav.png', 'w+b')
     f.write(base64.b64decode(pic))
     f.close()
+    messagebox.showinfo('saved','Saved in {}{}'.format(os.getcwd(),'/sav.png'))
+    del bar
 
 
 def show_password():
@@ -169,12 +188,12 @@ e3 = Entry(root1)
 b1 = Button(text='connect', command=connect)
 b2 = Button(text='login', command=partial(pass_auth))
 b3 = Button(text='exit', command=quit)
-b4 = Button(text='Execute on server', command=execute)
+b4 = Button(text='Execute', command=execute)
 b5 = Button(text='Show password', command=show_password)
 b6 = Button(text='Get Screen', command=get_screenshot)
 b7 = Button(text='Discover Server', command=desc_serv)
-t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70)
-listbox = Listbox(root1, bg='black', fg='white', height=10, width=40)
+t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70,font=('',11))
+listbox = Listbox(root1, bg='black', fg='white', height=7, width=50)
 listbox.insert(END, 'Discovered server will show in here')
 l1.pack()
 listbox.pack()
