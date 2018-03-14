@@ -1,6 +1,6 @@
 # Requirements
 
-Python>=2.7.10
+Python>=3.5
 
 Local Network with IP adreess
 
