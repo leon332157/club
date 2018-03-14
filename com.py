@@ -75,6 +75,7 @@ def execute():
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
+    s.settimeout(20)
     raw_output = s.recv(65535).decode('utf8')
     if raw_output.startswith('b3V0cHV0Cg=='):
         t1.config(state=NORMAL)
