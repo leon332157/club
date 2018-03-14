@@ -9,10 +9,12 @@ import base64
 import os
 from PIL import Image, ImageTk
 import pickle
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = int(6666)
 rot = rot13.Rot13()
 utf8 = 'utf8'
+
 
 def pass_auth():
     password = e2.get()
@@ -92,6 +94,7 @@ def get_screenshot():
     f.write(base64.b64decode(pic))
     f.close()
 
+
 def show_password():
     if not e2.get() == '':
         messagebox.showinfo(title='password', message=e2.get())
@@ -107,6 +110,46 @@ def quit():
     s.close()
     print('Connection Closed')
     exit()
+
+
+def desc_serv():
+    s = socket.socket()
+    serv_dict = {}
+    serv_list = []
+    try:
+        s.connect(('baidu.com', 80))
+        raw_ip_ip = s.getsockname()
+    except:
+        raw_ip_ip = socket.gethostbyname(socket.gethostname())
+    raw_ip = raw_ip_ip[0]
+    ip_list = raw_ip.split('.')
+    ip_1 = int(ip_list[0])
+    ip_2 = int(ip_list[1])
+    ip_3 = int(ip_list[2])
+    s.settimeout(1)
+    for i in range(2, 255):
+        ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
+        conn_stat = s.connect_ex((ip, 6668))
+        print(ip)
+        print(conn_stat)
+        if conn_stat == 0:
+            s.send(b'name query')
+            name = s.recv(1024).decode('utf8')
+            name = name.split('.')[1]
+            serv_dict[name] = ip
+            serv_list.append(name)
+    s.close()
+    s = socket.socket()
+    s.settimeout(0.5)
+    conn_stat = s.connect_ex(('127.0.0.1', 6668))
+    if conn_stat == 0:
+        s.send(b'name query')
+        name = s.recv(1024).decode('utf8')
+        name = name.split('.')[1]
+        serv_dict[name] = '127.0.0.1'
+        serv_list.append(name)
+    listbox.delete(END, END)
+    listbox.insert(END, serv_list)
 
 
 root1 = Tk()
@@ -126,8 +169,13 @@ b3 = Button(text='exit', command=quit)
 b4 = Button(text='Execute on server', command=execute)
 b5 = Button(text='Show password', command=show_password)
 b6 = Button(text='Get Screen', command=get_screenshot)
+b7 = Button(text='Discover Server', command=desc_serv)
 t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70)
+listbox = Listbox(root1, bg='black', fg='white', height=10, width=40)
+listbox.insert(END, 'Discovered server will show in here')
 l1.pack()
+listbox.pack()
+b7.pack()
 l2.pack()
 e1.pack()
 b1.pack()

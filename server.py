@@ -1,9 +1,15 @@
-import subprocess, threading, socket, base64, os, pyscreenshot, time, sys, textwrap, pickle
+import subprocess
+import socket
+import base64
+import os
+import textwrap
+import pyscreenshot
+import time
+import pickle
 from rot13 import Rot13
 from PIL import Image
-from test_serv import Server
-
-test_s = Server()
+import threading
+import name_server
 
 rot = Rot13()
 global password
@@ -15,17 +21,22 @@ except Exception as e:
     print(e)
     print("Please set password use 'change password.py'")
     exit(1)
+name = input('Set name for server:')
+NameServer = name_server.Name_Server(name)
+t = threading.Thread(target=NameServer.start)
+t.setDaemon(True)
+t.start()
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
-s.bind(('127.0.0.1', 6666))
+s.bind(('0.0.0.0', 6666))
 s.listen(100)
-print('\nServer listening on {0}:{1}'.format('127.0.0.1', 6666))
+print('\nServer listening on {0}:{1} and {0}:{2}'.format('127.0.0.1', 6666, 6668))
 try:
     conn, addr = s.accept()
 except KeyboardInterrupt:
     s.close()
     print('Connection Closed')
     exit(0)
-print('connection from: ' + str(addr))
+print('connection from: {}'.format(addr))
 
 
 def main():
