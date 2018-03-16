@@ -2,3 +2,4 @@ pyscreenshot
 pillow
 progressbar2
 python_utils
+six
