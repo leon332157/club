@@ -1,3 +1,4 @@
 pyscreenshot
 pillow
-progressbar
+progressbar2
+python_utils
