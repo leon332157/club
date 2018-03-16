@@ -10,7 +10,7 @@ import os
 from PIL import Image, ImageTk
 import pickle
 import progressbar
-
+from tkinter import tix
 
 def init():
     global s
@@ -176,8 +176,11 @@ def desc_serv():
     listbox.insert(END, serv_list)
 
 
-root1 = Tk()
-root1.title('Server Login')
+root = tix.Tk()
+root.title('Server Login')
+scr_win = tix.ScrolledWindow(root, width=700, height=500)
+scr_win.pack(fill='both', expand=1)
+root1 = scr_win.window
 l1 = Label(root1, text='Server Login', font=('', 30))
 l2 = Label(root1, text='Input server ip here:')
 l3 = Label(root1, text='Input server password here:')
@@ -187,13 +190,13 @@ l6 = Label(root1)
 e1 = Entry(root1)
 e2 = Entry(root1, show='*')
 e3 = Entry(root1)
-b1 = Button(text='connect', command=connect)
-b2 = Button(text='login', command=partial(pass_auth))
-b3 = Button(text='exit', command=quit)
-b4 = Button(text='Execute', command=execute)
-b5 = Button(text='Show password', command=show_password)
-b6 = Button(text='Get Screen', command=get_screenshot)
-b7 = Button(text='Discover Server', command=desc_serv)
+b1 = Button(root1, text='connect', command=connect)
+b2 = Button(root1, text='login', command=partial(pass_auth))
+b3 = Button(root1, text='exit', command=quit)
+b4 = Button(root1, text='Execute', command=execute)
+b5 = Button(root1, text='Show password', command=show_password)
+b6 = Button(root1, text='Get Screen', command=get_screenshot)
+b7 = Button(root1, text='Discover Server', command=desc_serv)
 t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70, font=('', 11))
 listbox = Listbox(root1, bg='black', fg='white', height=7, width=50)
 listbox.insert(END, 'Discovered server will show in here')
@@ -217,7 +220,7 @@ l6.pack()
 b3.pack()
 try:
     t1.config(state=DISABLED)
-    root1.resizable(width=False, height=False)
-    root1.mainloop()
+    root.resizable(width=False, height=False)
+    root.mainloop()
 except KeyboardInterrupt:
     quit()

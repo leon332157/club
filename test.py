@@ -1,21 +1,81 @@
-import cv2
+# !/usr/bin/python
 
+from tkinter import tix
+from tkinter import *
 
-def show_webcam(mirror=False):
-    cam = cv2.VideoCapture(0)
-    while True:
-        ret_val, img = cam.read()
-        if mirror:
-            img = cv2.flip(img, 1)
-        cv2.imshow('my webcam', img)
-        if cv2.waitKey(1) == 27:
-            break  # esc to quit
-    cv2.destroyAllWindows()
+app = tix.Tk()
+app.title('exploring tix')
 
+# scr_win = tix.ScrolledWindow(app, width=200, height=300,scrollbar='y')
+scr_win = tix.ScrolledWindow(app, width=500, height=600)
+scr_win.pack(fill='both', expand=1)
 
-def main():
-    show_webcam(mirror=True)
+sframe = scr_win.window
+# sframe.config(bg='brown')
+s1 = '''Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+Welcome to tkinter.tix, tkinter on steroids!
+'''
+s2 = '... Now included with Python31 ...'
+# for x in range(20):
+# tix.Label(sframe, text=s1, bg='yellow').pack()
+# tix.Label(sframe, text=s2, bg='white', fg='red').pack()
 
+tix.Label(sframe, text=s1, bg='yellow').pack()
+tix.Label(sframe, text=s2, bg='white', fg='red').pack()
 
-if __name__ == '__main__':
-main()
+Checkbutton(sframe, text='I have HotFix/OINT rollback labels').pack()
+Button(sframe, text='Exit').pack(side=LEFT)
+Button(sframe, text='Next', width=20).pack(side=RIGHT)
+
+app.mainloop()
