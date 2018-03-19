@@ -11,6 +11,7 @@ import pickle
 import progressbar
 from tkinter import tix
 
+
 def init():
     global s
     global rot
@@ -20,9 +21,6 @@ def init():
     port = int(6666)
     rot = rot13.Rot13()
     utf8 = 'utf8'
-
-
-init()
 
 
 def pass_auth():
@@ -87,10 +85,11 @@ def execute():
 
 
 def cls():
-    ''':TODO:FIX CLEAR'''
+    """:TODO:FIX CLEAR"""
     t1.config(state=NORMAL)
     t1.delete(0, END)
     t1.config(state=DISABLED)
+
 
 def get_screenshot():
     try:
@@ -130,10 +129,10 @@ def show_password():
         messagebox.showinfo(title='input password', message='Please input password.')
 
 
-def quit():
+def quit_serv():
     try:
         s.send(b'ZXhpdCgp==')
-    except Exception as e:
+    except Exception:
         pass
     s.close()
     print('Connection Closed')
@@ -141,50 +140,65 @@ def quit():
 
 
 def desc_serv():
-    s = socket.socket()
+    s1 = socket.socket()
     serv_dict = {}
     serv_list = []
     try:
-        s.connect(('baidu.com', 80))
-        raw_ip_ip = s.getsockname()
-    except:
+        s1.connect(('baidu.com', 80))
+        raw_ip_ip = s1.getsockname()
+    except Exception:
         raw_ip_ip = socket.gethostbyname(socket.gethostname())
     raw_ip = raw_ip_ip[0]
     ip_list = raw_ip.split('.')
     ip_1 = int(ip_list[0])
     ip_2 = int(ip_list[1])
     ip_3 = int(ip_list[2])
-    s.settimeout(1)
+    s1.settimeout(1)
     for i in range(2, 255):
         ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
-        conn_stat = s.connect_ex((ip, 6668))
+        conn_stat = s1.connect_ex((ip, 6668))
         print(ip)
         print(conn_stat)
         if conn_stat == 0:
-            s.send(b'name query')
-            name = s.recv(1024).decode('utf8')
+            s1.send(b'name query')
+            name = s1.recv(1024).decode('utf8')
             name = name.split('.')[1]
             serv_dict[name] = ip
             serv_list.append(name)
-    s.close()
-    s = socket.socket()
-    s.settimeout(0.5)
-    conn_stat = s.connect_ex(('127.0.0.1', 6668))
+    s1.close()
+    ss = socket.socket()
+    ss.settimeout(0.5)
+    conn_stat = ss.connect_ex(('127.0.0.1', 6668))
     if conn_stat == 0:
-        s.send(b'name query')
-        name = s.recv(1024).decode('utf8')
+        ss.send(b'name query')
+        name = s1.recv(1024).decode('utf8')
         name = name.split('.')[1]
         serv_dict[name] = '127.0.0.1'
         serv_list.append(name)
     listbox.delete(END, END)
+    if len(serv_list) == 0:
+        serv_list = 'No server found. (including localhost)'
     listbox.insert(END, serv_list)
 
 
-root = tix.Tk()
+def on_configure(event):
+    # update scrollregion after starting 'mainloop'
+    # when all widgets are in canvas
+    canvas.configure(scrollregion=canvas.bbox('all'))
+
+
+init()
+root = Tk()
+canvas = Canvas(root)
+canvas.pack(side=LEFT)
+scrollbar = Scrollbar(root, command=canvas.yview)
+scrollbar.pack(side=LEFT, fill='y')
+canvas.bind('<Configure>', on_configure)
+root1 = Frame(canvas)
+canvas.configure(width=500, height=600)
+canvas.create_window((0, 0), width=0, window=root1, anchor=NW)
+canvas.configure(yscrollcommand=scrollbar.set)
 root.title('Server Login')
-scr_win = tix.ScrolledWindow(root, width=700, height=500)
-scr_win.pack(fill='both', expand=1)
-root1 = scr_win.window
 l1 = Label(root1, text='Server Login', font=('', 30))
 l2 = Label(root1, text='Input server ip here:')
 l3 = Label(root1, text='Input server password here:')
@@ -229,4 +243,4 @@ try:
     root.resizable(width=False, height=False)
     root.mainloop()
 except KeyboardInterrupt:
-    quit()
+    quit_serv()
