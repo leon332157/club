@@ -114,7 +114,6 @@ def get_screenshot():
     for each in bar(each_len):
         raw_list.append(s.recv(each + 100))
         s.send(b'conf')
-        time.sleep(0.1)
     print('\nrecived segments {}'.format(len(raw_list)))
     pic = b''.join(raw_list)
     f = open(os.getcwd() + '/sav.png', 'w+b')
