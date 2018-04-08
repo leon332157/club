@@ -9,7 +9,8 @@ import base64
 import os
 import pickle
 import progressbar
-from tkinter import tix
+
+from _socket import error as SocketError
 
 
 def init():
@@ -145,40 +146,42 @@ def desc_serv():
     serv_list = []
     try:
         s1.connect(('baidu.com', 80))
-        raw_ip_ip = s1.getsockname()
+        raw_ip = s1.getsockname()[0]
     except Exception:
-        raw_ip_ip = socket.gethostbyname(socket.gethostname())
-    raw_ip = raw_ip_ip[0]
+        raw_ip = socket.gethostbyname(socket.gethostname())[0]
+    s1.close()
     ip_list = raw_ip.split('.')
     ip_1 = int(ip_list[0])
     ip_2 = int(ip_list[1])
     ip_3 = int(ip_list[2])
-    s1.settimeout(1)
-    for i in range(2, 255):
-        ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
-        conn_stat = s1.connect_ex((ip, 6668))
-        print(ip)
-        print(conn_stat)
-        if conn_stat == 0:
-            s1.send(b'name query')
-            name = s1.recv(1024).decode('utf8')
-            name = name.split('.')[1]
-            serv_dict[name] = ip
-            serv_list.append(name)
-    s1.close()
-    ss = socket.socket()
-    ss.settimeout(0.5)
-    conn_stat = ss.connect_ex(('127.0.0.1', 6668))
-    if conn_stat == 0:
-        ss.send(b'name query')
-        name = s1.recv(1024).decode('utf8')
-        name = name.split('.')[1]
-        serv_dict[name] = '127.0.0.1'
-        serv_list.append(name)
+    s1 = socket.socket()
+    s1.settimeout(0.5)
+    with progressbar.ProgressBar(max_value=255) as Bar:
+        for i in range(1, 255):
+            if i == 1:
+                ip = '127.0.0.1'
+            else:
+                ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
+            #print(ip)
+            try:
+                s1.connect((ip, 6668))
+                s1.send(b'name query')
+                name = s1.recv(1024).decode('utf8')
+                name = name.split('.')[1]
+                serv_dict[name] = ip
+                serv_list.append(name)
+                s1.send(b'restart')
+                s1.close()
+            except SocketError as e:
+                s1.close()
+                del s1
+                s1 = socket.socket()
+                s1.settimeout(0.5)
+            Bar.update(i)
     listbox.delete(END, END)
     if len(serv_list) == 0:
         serv_list = 'No server found. (including localhost)'
-    listbox.insert(END, serv_list)
+    listbox.insert(0, serv_list)
 
 
 def on_configure(event):
