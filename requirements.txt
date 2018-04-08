@@ -3,3 +3,5 @@ pillow
 progressbar2
 python_utils
 six
+requests
+flask

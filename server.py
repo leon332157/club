@@ -8,7 +8,7 @@ import time
 import pickle
 from rot13 import Rot13
 from PIL import Image
-import threading
+import multiprocessing as mp
 import name_server
 import progressbar
 
@@ -26,14 +26,12 @@ name = input('Set name for server:')
 if not name:
     name = 'foo'
 print('name: {}'.format(name))
-NameServer = name_server.Name_Server(name)
-t = threading.Thread(target=NameServer.start)
-t.setDaemon(True)
-t.start()
+NameServer = name_server.NameServer(name)
+mp.Process(target=NameServer.start).start()
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
 s.bind(('0.0.0.0', 6666))
 s.listen(100)
-print('\nServer listening on {0}:{1} and {0}:{2}'.format('127.0.0.1', 6666, 6668))
+print('\nServer listening on {0}:{1} and {0}:{2}'.format('0.0.0.0', 6666, 5000))
 try:
     conn, addr = s.accept()
 except KeyboardInterrupt:

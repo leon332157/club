@@ -1,25 +1,23 @@
-import socket
+import flask
+import uuid
 
-
-class Name_Server():
+class NameServer():
     def __init__(self, name):
-        self.s = socket.socket()
-        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(('0.0.0.0', 6668))
-        self.s.listen(10)
-        self.name = name
+        self.app = flask.Flask(__name__)
+        self.name = str(name)
+        self.id=str(uuid.uuid4().int)
+        @self.app.route('/')
+        def index():
+            return self.name
+        @self.app.route('/id')
+        def id():
+            #print(self.id)
+            return self.id
 
-    def start(self):
-        print('name server started')
-        conn, addr = self.s.accept()
-        print(addr)
-        while True:
-            data = conn.recv(1024).decode('utf8')
-            if data == 'name query':
-                conn.send('response.{}'.format(self.name).encode('utf8'))
-            if data == 'name change':
-                conn.send('response_name_change')
-                self.name = conn.recv(1024).decode('utf8')
-            if data == 'restart':
-                self.s.close()
-                self.__init__(self.name)
+    def start(self, debug=False):
+        self.app.run(host='0.0.0.0',debug=debug)  # (debug=True)
+
+
+if __name__ == '__main__':
+    ns = NameServer('foo')
+    ns.start(debug=True)

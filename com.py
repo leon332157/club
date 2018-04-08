@@ -6,11 +6,11 @@ from tkinter.scrolledtext import *
 import time
 import rot13
 import base64
-import os
 import pickle
 import progressbar
-
-from _socket import error as SocketError
+import requests
+import threading
+import os
 
 
 def init():
@@ -22,6 +22,10 @@ def init():
     port = int(6666)
     rot = rot13.Rot13()
     utf8 = 'utf8'
+    try:
+     os.rmdir('cache/desc_running')
+    except FileNotFoundError:
+        pass
 
 
 def pass_auth():
@@ -141,9 +145,18 @@ def quit_serv():
 
 
 def desc_serv():
-    s1 = socket.socket()
-    serv_dict = {}
+    t = threading.Thread(target=desc_serv_helper, daemon=True)
+    if not os.path.isdir('cache/desc_running'):
+        t.start()
+    else:
+        messagebox.showwarning('Already Running', 'Already Discovering Server')
+
+
+def desc_serv_helper():
+    os.mkdir('cache/desc_running', )
     serv_list = []
+    raw_serv_dict = {}
+    s1 = socket.socket()
     try:
         s1.connect(('baidu.com', 80))
         raw_ip = s1.getsockname()[0]
@@ -158,30 +171,31 @@ def desc_serv():
     s1.settimeout(0.5)
     with progressbar.ProgressBar(max_value=255) as Bar:
         for i in range(1, 255):
-            if i == 1:
-                ip = '127.0.0.1'
-            else:
-                ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
+            #if i == 1:
+            #    ip = '127.0.0.1'
+            #else:
+            ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
             #print(ip)
             try:
-                s1.connect((ip, 6668))
-                s1.send(b'name query')
-                name = s1.recv(1024).decode('utf8')
-                name = name.split('.')[1]
-                serv_dict[name] = ip
-                serv_list.append(name)
-                s1.send(b'restart')
-                s1.close()
-            except SocketError as e:
-                s1.close()
-                del s1
-                s1 = socket.socket()
-                s1.settimeout(0.5)
+                name = requests.get('http://{}:5000'.format(ip), timeout=0.1)
+                if name.status_code == 200:
+                    raw_serv_dict[name.text] = ip
+                del name
+            except requests.exceptions.RequestException:
+                pass
             Bar.update(i)
-    listbox.delete(END, END)
+            del ip
+        x=0
+        for k,v in raw_serv_dict.items():
+            x+=1
+            serv_list.append('{}) {} {}'.format(x,k,v))
+    listbox.delete(0, END)
     if len(serv_list) == 0:
-        serv_list = 'No server found. (including localhost)'
-    listbox.insert(0, serv_list)
+        listbox.insert(END, 'No server found.')
+        return
+    for each in serv_list:
+     listbox.insert(END, each)
+    os.rmdir('cache/desc_running')
 
 
 def on_configure(event):
