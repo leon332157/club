@@ -105,16 +105,22 @@ def get_screenshot():
     bar = progressbar.ProgressBar(max_value=progressbar.UnknownLength)
     s.settimeout(20)
     s.send(b'log check')
+    print('lg')
     if s.recv(1024) == b'not':
         messagebox.showinfo(title='login', message='Please login first')
         return
     if s.recv(1024) == b'l1':
         s.send(b'l1conf')
-    time.sleep(1)
+        print('l1')
+    s.send(b'start')
+    print('lstart')
     raw_each_len = s.recv(8192)
+    print(raw_each_len)
     each_len = json.loads(raw_each_len)
     s.send(b'l1sconf')
+    print('lisconf')
     s.send(b'start')
+    print('start')
     raw_list = list()
     for each in bar(each_len):
         raw_list.append(s.recv(each + 100))
