@@ -95,37 +95,33 @@ def cls():
     t1.delete("1.0", END)
     t1.config(state=DISABLED)
 
-
 def get_screenshot():
+    th = threading.Thread(target=get_screenshot_helper, daemon=True)
+
+
+def get_screenshot_helper():
     try:
         s.send(b'aW1hZ2UgcXVlcnk=')
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
-    bar = progressbar.ProgressBar(max_value=progressbar.UnknownLength)
     s.settimeout(20)
     s.send(b'log check')
-    print('lg')
     if s.recv(1024) == b'not':
         messagebox.showinfo(title='login', message='Please login first')
         return
     if s.recv(1024) == b'l1':
         s.send(b'l1conf')
-        print('l1')
     s.send(b'start')
-    print('lstart')
     raw_each_len = s.recv(9000)
-    print(raw_each_len)
     each_len = json.loads(raw_each_len)
     s.send(b'l1sconf')
-    print('lisconf')
     s.send(b'start')
-    print('start')
     raw_list = list()
-    with progressbar.ProgressBar(max_value=progressbar.UnknownLength) as bar:
+    with progressbar.ProgressBar(max_value=each_len) as bar:
         for i in range(0, each_len):
             raw_list.append(s.recv(400))
-        s.send(b'conf')
+            s.send(b'conf')
             bar.update(i)
     print('\nrecived segments {}'.format(len(raw_list)))
     pic = b''.join(raw_list)
