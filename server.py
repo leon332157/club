@@ -5,7 +5,7 @@ import os
 import textwrap
 import pyscreenshot
 import time
-import pickle
+import json
 from rot13 import Rot13
 from PIL import Image
 import multiprocessing as mp
@@ -95,7 +95,7 @@ def main():
             if not conn.recv(1024) == b'l1conf':
                 time.sleep(1)
             print('recvd hello')
-            conn.send(pickle.dumps(each_len))
+            conn.send(json.dumps(each_len))
             if not conn.recv(1024) == b'l1sconf':
                 time.sleep(1)
             print('client size confirmed')

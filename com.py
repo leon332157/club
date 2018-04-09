@@ -6,7 +6,7 @@ from tkinter.scrolledtext import *
 import time
 import rot13
 import base64
-import pickle
+import json
 import progressbar
 import requests
 import threading
@@ -110,8 +110,9 @@ def get_screenshot():
         return
     if s.recv(1024) == b'l1':
         s.send(b'l1conf')
+    time.sleep(1)
     raw_each_len = s.recv(65535)
-    each_len = pickle.loads(raw_each_len)
+    each_len = json.loads(raw_each_len)
     s.send(b'l1sconf')
     s.send(b'start')
     raw_list = list()
