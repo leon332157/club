@@ -12,33 +12,36 @@ import multiprocessing as mp
 import name_server
 import progressbar
 
-rot = Rot13()
-global password
-try:
-    with open(os.getcwd() + '/password.pc', 'r+') as f:
-        raw_password = f.read().encode('utf8')
-        password = rot.decodes(base64.b64decode(raw_password).decode('utf8'))
-except Exception as e:
-    print(e)
-    print("Please set password use 'change password.py'")
-    exit(1)
-name = input('Set name for server:')
-if not name:
-    name = 'Test'
-print('name: {}'.format(name))
-NameServer = name_server.NameServer(name)
-mp.Process(target=NameServer.start).start()
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
-s.bind(('0.0.0.0', 6666))
-s.listen(100)
-print('\nServer listening on {0}:{1} and {0}:{2}'.format('0.0.0.0', 6666, 5000))
-try:
-    conn, addr = s.accept()
-except KeyboardInterrupt:
-    s.close()
-    print('Connection Closed')
-    exit(0)
-print('connection from: {}'.format(addr))
+class Server(object):
+    
+    
+def __init__(self):
+    self.rot = Rot13()
+    try:
+        with open(os.getcwd() + '/password.pc', 'r+') as f:
+            raw_password = f.read().encode('utf8')
+            self.password = rot.decodes(base64.b64decode(raw_password).decode('utf8'))
+    except Exception as e:
+        print(e)
+        print("Please set password use 'change password.py'")
+        exit(1)
+    name = input('Set name for server:')
+    if not name:
+        name = 'Test'
+    print('name: {}'.format(name))
+    self.NameServer = name_server.NameServer(name)
+    mp.Process(target=NameServer.start).start()
+    self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
+    self.s.bind(('0.0.0.0', 6666))
+    self.s.listen(100)
+    print('\nServer listening on {0}:{1} and {0}:{2}'.format('0.0.0.0', 6666, 5000))
+    try:
+        conn, addr = self.s.accept()
+    except KeyboardInterrupt:
+        self.s.close()
+        print('Connection Closed')
+        exit(0)
+    print('connection from: {}'.format(addr))
 
 
 def main():
