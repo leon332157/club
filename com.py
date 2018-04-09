@@ -23,7 +23,15 @@ def init():
     rot = rot13.Rot13()
     utf8 = 'utf8'
     try:
+        os.mkdir('cache')
+    except FileExistsError:
+        pass
+    try:
         os.rmdir('cache/desc_running')
+    except FileNotFoundError:
+        pass
+    try:
+        os.rmdir('cache/get_sc')
     except FileNotFoundError:
         pass
 
@@ -97,6 +105,10 @@ def cls():
 
 def get_screenshot():
     th = threading.Thread(target=get_screenshot_helper, daemon=True)
+    if not os.path.isdir('cache/get_sc'):
+        th.start()
+    else:
+        messagebox.showwarning('Already Running', 'Already Receiving Screenshot')
 
 
 def get_screenshot_helper():
@@ -105,6 +117,7 @@ def get_screenshot_helper():
     except Exception as e:
         messagebox.showwarning(title='Error', message=e)
         return
+    os.mkdir('cache/get_sc')
     s.settimeout(20)
     s.send(b'log check')
     if s.recv(1024) == b'not':
@@ -130,7 +143,7 @@ def get_screenshot_helper():
     f.close()
     messagebox.showinfo('saved', 'Saved in {}{}'.format(os.getcwd(), '/sav.png'))
     del bar
-
+    os.rmdir('cache/get_sc')
 
 def show_password():
     if not e2.get() == '':

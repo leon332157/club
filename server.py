@@ -109,7 +109,6 @@ def main():
                 if not conn.recv(1024) == b'conf':
                     time.sleep(0.1)
             print('\nsent segments: {}'.format(len(base64_list)))
-            del bar
             return True
         else:
             conn.send('incorrect'.encode('utf8'))
