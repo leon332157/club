@@ -24,7 +24,7 @@ except Exception as e:
     exit(1)
 name = input('Set name for server:')
 if not name:
-    name = 'foo'
+    name = 'Test'
 print('name: {}'.format(name))
 NameServer = name_server.NameServer(name)
 mp.Process(target=NameServer.start).start()
@@ -112,7 +112,7 @@ def main():
             conn.send('incorrect'.encode('utf8'))
             print('incorrect password')
             return False
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ConnectionResetError):
         s.close()
         print('Connection Closed')
         exit()

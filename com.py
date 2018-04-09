@@ -23,7 +23,7 @@ def init():
     rot = rot13.Rot13()
     utf8 = 'utf8'
     try:
-     os.rmdir('cache/desc_running')
+        os.rmdir('cache/desc_running')
     except FileNotFoundError:
         pass
 
@@ -92,7 +92,7 @@ def execute():
 def cls():
     """:TODO:FIX CLEAR"""
     t1.config(state=NORMAL)
-    t1.delete(0, END)
+    t1.delete("1.0", END)
     t1.config(state=DISABLED)
 
 
@@ -139,6 +139,7 @@ def quit_serv():
         s.send(b'ZXhpdCgp==')
     except Exception:
         pass
+    time.sleep(1)
     s.close()
     print('Connection Closed')
     exit()
@@ -170,12 +171,12 @@ def desc_serv_helper():
     s1 = socket.socket()
     s1.settimeout(0.5)
     with progressbar.ProgressBar(max_value=255) as Bar:
-        for i in range(1, 255):
-            #if i == 1:
+        for i in range(0, 255):
+            # if i == 1:
             #    ip = '127.0.0.1'
-            #else:
+            # else:
             ip = '%d.%d.%d.%d' % (ip_1, ip_2, ip_3, i)
-            #print(ip)
+            # print(ip)
             try:
                 name = requests.get('http://{}:5000'.format(ip), timeout=0.1)
                 if name.status_code == 200:
@@ -185,17 +186,20 @@ def desc_serv_helper():
                 pass
             Bar.update(i)
             del ip
-        x=0
-        for k,v in raw_serv_dict.items():
-            x+=1
-            serv_list.append('{}) {} {}'.format(x,k,v))
+        x = 0
+        for k, v in raw_serv_dict.items():
+            x += 1
+            serv_list.append('{}) {} {}'.format(x, k, v))
     listbox.delete(0, END)
     if len(serv_list) == 0:
         listbox.insert(END, 'No server found.')
         return
     for each in serv_list:
-     listbox.insert(END, each)
-    os.rmdir('cache/desc_running')
+        listbox.insert(END, each)
+        try:
+            os.rmdir('cache/desc_running')
+        except FileNotFoundError:
+            pass
 
 
 def on_configure(event):
@@ -212,7 +216,7 @@ scrollbar = Scrollbar(root, command=canvas.yview)
 scrollbar.pack(side=LEFT, fill='y')
 canvas.bind('<Configure>', on_configure)
 root1 = Frame(canvas)
-canvas.configure(width=500, height=600)
+canvas.configure(width=550, height=600)
 canvas.create_window((0, 0), width=0, window=root1, anchor=NW)
 canvas.configure(yscrollcommand=scrollbar.set)
 root.title('Server Login')

@@ -15,9 +15,9 @@ class NameServer():
             return self.id
 
     def start(self, debug=False):
-        self.app.run(host='0.0.0.0',debug=debug)  # (debug=True)
+        self.app.run(host='0.0.0.0', debug=debug)
 
 
 if __name__ == '__main__':
-    ns = NameServer('foo')
+    ns = NameServer('Test')
     ns.start(debug=True)
