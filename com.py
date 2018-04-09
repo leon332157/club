@@ -114,7 +114,7 @@ def get_screenshot():
         print('l1')
     s.send(b'start')
     print('lstart')
-    raw_each_len = s.recv(8192)
+    raw_each_len = s.recv(9000)
     print(raw_each_len)
     each_len = json.loads(raw_each_len)
     s.send(b'l1sconf')
@@ -122,9 +122,11 @@ def get_screenshot():
     s.send(b'start')
     print('start')
     raw_list = list()
-    for each in bar(each_len):
-        raw_list.append(s.recv(each + 100))
+    with progressbar.ProgressBar(max_value=progressbar.UnknownLength) as bar:
+        for i in range(0, each_len):
+            raw_list.append(s.recv(400))
         s.send(b'conf')
+            bar.update(i)
     print('\nrecived segments {}'.format(len(raw_list)))
     pic = b''.join(raw_list)
     f = open(os.getcwd() + '/sav.png', 'w+b')

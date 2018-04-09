@@ -97,7 +97,7 @@ def main():
             print('recvd hello')
             while not conn.recv(1024) == b'start':
                 time.sleep(0.5)
-            conn.send(json.dumps(each_len).encode('utf8'))
+            conn.send(json.dumps(len(each_len)).encode('utf8'))
             while not conn.recv(1024) == b'l1sconf':
                 time.sleep(0.1)
             print('client size confirmed')
