@@ -111,7 +111,7 @@ def get_screenshot():
     if s.recv(1024) == b'l1':
         s.send(b'l1conf')
     time.sleep(1)
-    raw_each_len = s.recv(65535)
+    raw_each_len = s.recv(8192)
     each_len = json.loads(raw_each_len)
     s.send(b'l1sconf')
     s.send(b'start')
