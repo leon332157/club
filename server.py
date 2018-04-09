@@ -92,19 +92,20 @@ def main():
                 print('data ready')
             conn.send(b'l1')
             print('sent hello')
-            if not conn.recv(1024) == b'l1conf':
-                time.sleep(1)
+            while not conn.recv(1024) == b'l1conf':
+                time.sleep(0.1)
             print('recvd hello')
             conn.send(json.dumps(each_len).encode('utf8'))
-            if not conn.recv(1024) == b'l1sconf':
-                time.sleep(1)
+            while not conn.recv(1024) == b'l1sconf':
+                time.sleep(0.1)
             print('client size confirmed')
-            if conn.recv(1024) == b'start':
-                print('Start sending')
-                for each in bar(base64_list):
-                    conn.send(each.encode('utf8'))
-                    if not conn.recv(1024) == b'conf':
-                        time.sleep(1)
+            while not conn.recv(1024) == b'start':
+                time.sleep(0.1)
+            print('Start sending')
+            for each in bar(base64_list):
+                conn.send(each.encode('utf8'))
+                if not conn.recv(1024) == b'conf':
+                    time.sleep(0.1)
             print('\nsent segments: {}'.format(len(base64_list)))
             del bar
             return True
