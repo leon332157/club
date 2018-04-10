@@ -43,4 +43,5 @@ class ChangePasswordTool:
         return
 
 
-ChangePasswordTool()
+if __name__ == '__main__':
+    ChangePasswordTool()
