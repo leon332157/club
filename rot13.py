@@ -1,12 +1,12 @@
 class Rot13():
-    '''Usage:
+    """Usage:
     rot=Rot13()
     rot.encode(str)
     rot.decode(str)
-    :returns a list with each element in str
+    :rtype list with each element in str
     rot.decodes(str)
     rot.encodes(str)
-    :returns a str'''
+    :rtype str"""
 
     def __init__(self):
         self.dic_en = {}
@@ -24,37 +24,42 @@ class Rot13():
         return 'ROT13 Passcode'
 
     def encode(self, string):
-        self.l = []
+        li = []
         for each in string:
-                if self.dic_en.get(each) == None:
-                    self.l.append(each)
-                else:
-                    self.l.append(self.dic_en.get(each))
-        return self.l
+            if not self.dic_en.get(each):
+                li.append(each)
+            else:
+                li.append(self.dic_en.get(each))
+        return li
 
     def decode(self, string):
-        self.l = []
+        li = []
         for each in string:
-                if self.dic_dn.get(each) == None:
-                    self.l.append(each)
-                else:
-                    self.l.append(self.dic_dn.get(each))
-        return self.l
+            if not self.dic_dn.get(each):
+                li.append(each)
+            else:
+                li.append(self.dic_dn.get(each))
+        return li
 
     def encodes(self, string):
-        self.l = []
+        li = []
         for each in string:
-                if self.dic_en.get(each) == None:
-                    self.l.append(each)
-                else:
-                    self.l.append(self.dic_en.get(each))
-        return ''.join(self.l)
+            if not self.dic_en.get(each):
+                li.append(each)
+            else:
+                li.append(self.dic_en.get(each))
+        return ''.join(li)
 
     def decodes(self, string):
-        self.l = []
+        li = []
         for each in string:
-                if self.dic_dn.get(each) == None:
-                    self.l.append(each)
-                else:
-                    self.l.append(self.dic_dn.get(each))
-        return ''.join(self.l)
+            if not self.dic_dn.get(each):
+                li.append(each)
+            else:
+                li.append(self.dic_dn.get(each))
+        return ''.join(li)
+
+
+if __name__ == '__main__':
+    import this
+    print(Rot13().decode(this.s))
