@@ -13,7 +13,7 @@ import os
 import socket
 
 
-class Client():
+class Client:
 
     def __init__(self):
         self.s = socket.socket()
