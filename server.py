@@ -14,6 +14,7 @@ import name_server
 import progressbar
 
 rot = Rot13()
+
 global password
 try:
     with open(os.getcwd() + '/password.pc', 'r+') as f:
@@ -28,17 +29,31 @@ if not name:
     name = 'Test'
 print('name: {}'.format(name))
 NameServer = name_server.NameServer(name)
-mp.Process(target=NameServer.start).start()
+name_serv = mp.Process(target=NameServer.start)
+name_serv.daemon = True
+name_serv.start()
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initiallize socket
 s.bind(('0.0.0.0', 6666))
 s.listen(100)
 print('\nServer listening on {0}:{1} and {0}:{2}'.format('0.0.0.0', 6666, 5000))
+
+
+def quit_serv():
+    try:
+        conn.close()
+    except NameError:
+        pass
+    s.close()
+    name_serv.terminate()
+    name_serv.join()
+    print('Connection Closed')
+    exit(0)
+
+
 try:
     conn, addr = s.accept()
 except KeyboardInterrupt:
-    s.close()
-    print('Connection Closed')
-    exit(0)
+    quit_serv()
 print('connection from: {}'.format(addr))
 
 
@@ -107,7 +122,7 @@ def main():
             print('Start sending')
             for each in bar(base64_list):
                 conn.send(each.encode('utf8'))
-                if not conn.recv(1024) == b'conf':
+                while not conn.recv(1024) == b'conf':
                     time.sleep(0.1)
             print('\nsent segments: {}'.format(len(base64_list)))
             del bar
@@ -117,9 +132,7 @@ def main():
             print('incorrect password')
             return False
     except (KeyboardInterrupt, ConnectionResetError):
-        s.close()
-        print('Connection Closed')
-        exit()
+        quit_serv()
 
 
 log = False
