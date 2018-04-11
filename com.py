@@ -98,7 +98,6 @@ def execute():
 
 
 def cls():
-    """:TODO:FIX CLEAR"""
     t1.config(state=NORMAL)
     t1.delete("1.0", END)
     t1.config(state=DISABLED)
@@ -157,9 +156,8 @@ def show_password():
 def quit_serv():
     try:
         s.send(b'ZXhpdCgp==')
-    except Exception:
+    except socket.error:
         pass
-    time.sleep(1)
     s.close()
     print('Connection Closed')
     exit()
@@ -260,26 +258,9 @@ b8 = Button(root1, text='Clear log ', command=cls)
 t1 = ScrolledText(root1, bg='black', fg='white', height=10, width=70, font=('', 11))
 listbox = Listbox(root1, bg='black', fg='white', height=7, width=50)
 listbox.insert(END, 'Discovered server will show in here')
-tk_comp_list = [l1, listbox, ]
-l1.pack()
-listbox.pack()
-b7.pack()
-l2.pack()
-e1.pack()
-b1.pack()
-l3.pack()
-e2.pack()
-b2.pack()
-b5.pack()
-l4.pack()
-e3.pack()
-b4.pack()
-l5.pack()
-t1.pack()
-b8.pack()
-b6.pack()
-l6.pack()
-b3.pack()
+tk_comp_list = [l1, listbox, b7, l2, e1, b1, l3, e2, b2, b5, l4, e3, b4, l5, t1, b8, b6, l6, b3]
+for each in tk_comp_list:
+    each.pack()
 try:
     t1.config(state=DISABLED)
     root.resizable(width=False, height=False)
