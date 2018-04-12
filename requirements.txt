@@ -5,3 +5,6 @@ python_utils
 six
 requests
 flask
+pyDes
+pygame
+twisted

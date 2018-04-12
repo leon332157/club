@@ -179,7 +179,7 @@ def desc_serv_helper():
     try:
         s1.connect(('baidu.com', 80))
         raw_ip = s1.getsockname()[0]
-    except Exception:
+    except socket.error:
         raw_ip = socket.gethostbyname(socket.gethostname())[0]
     s1.close()
     ip_list = raw_ip.split('.')
@@ -212,8 +212,8 @@ def desc_serv_helper():
     if len(serv_list) == 0:
         listbox.insert(END, 'No server found.')
         return
-    for each in serv_list:
-        listbox.insert(END, each)
+    for x in serv_list:
+        listbox.insert(END, x)
         try:
             os.rmdir('cache/desc_running')
         except FileNotFoundError:
