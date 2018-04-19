@@ -85,6 +85,14 @@ def main():
             conn.send(bytes('correct'.encode('utf8')))
             print('correct password')
             return True
+        if data == 'c2ZpbGUNCg==':
+            if conn.recv(1024) == b'log check':
+                if not log:
+                    conn.send(b'not')
+                    print('Not logged in')
+                    return False
+                else:
+                    conn.send(b'pass')
         if data == 'aW1hZ2UgcXVlcnk=':
             if conn.recv(1024) == b'log check':
                 if not log:

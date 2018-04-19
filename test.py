@@ -1,7 +1,8 @@
-import numpy
-from statistics import median, mode
+from tkinter import filedialog
+from tkinter import *
+import os
 
-l1 = [14.8, 15.2, 15.7, 15.7, 14.6]
-l2 = [16.6, 18.2, 15.9, 18, 19.3]
-print(median(l1))
-print(median(l2))
+root = Tk()
+filename = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select file")
+print(filename)
+# open

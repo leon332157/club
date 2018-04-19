@@ -3,6 +3,7 @@ import tkinter.messagebox as messagebox
 from tkinter import *
 from functools import partial
 from tkinter.scrolledtext import *
+from tkinter import filedialog
 import time
 import rot13
 import base64
@@ -109,6 +110,25 @@ def get_screenshot():
         th.start()
     else:
         messagebox.showwarning('Already Running', 'Already Receiving Screenshot')
+
+
+def send_file_helper():
+    try:
+        s.send(b'c2ZpbGUNCg==')
+    except Exception as e:
+        messagebox.showwarning(title='Error', message=e)
+        return
+    s.send(b'log check')
+    if s.recv(1024) == b'not':
+        messagebox.showinfo(title='login', message='Please login first')
+        return
+    file = filedialog.askopenfile(mode='rb')
+    try:
+        file_content = base64.b64encode(file.read())
+    except IOError as e:
+        messagebox.showerror('Error', message=e)
+        # TODO
+
 
 
 def get_screenshot_helper():
