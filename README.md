@@ -1,29 +1,36 @@
-# Requirements
+#python-udp-filetransfer
 
-Python>=3.5
+This was an networking assignment. The idea was to create a server and client, where the client could download files
+from the server. Files are transferred over UDP, but packet retransmission is added. You can also force random packet
+drops too. 
 
-Local Network with IP adreess
+#### server.py
 
-Tk interface
+Usage:
+`
+python server.py port p_err
+`
 
-# Usage
+Where 
+* `port` is the port number to listen on
+* `p_err` is the probability of a packet being deliberately dropped by the server, where 0 <= `p_err` <= 1
 
-Start server first, then start com to login server and execute command.
+The server is blocking, so it will run, display the its IP address, and await a packet from the client.
+Output is printed for each packet sent and received.
 
-Do **NOT** execute command that requires input *eg: sh,python, apt* 
+#### client.py
 
-Which will block the main thread in the server, also the cilent.
+Usage:
+`
+python client.py srcfile destfile addr port p_err
+`
 
-## Change password.py
+Where 
+* `srcfile` is the file to download from the server
+* `destfile` is the file to save the downloaded file as locally
+* `addr` is the address of the server
+* `port` is the port to send data to the server on
+* `p_err` is the probability of a packet being deliberately dropped by the client, where 0 <= `p_err` <= 1
 
-Tool for change password of the server. Please place generated *password.pc* file under the directory of the *server.py*
-
-# ROT13
-
-Module for encode/decode character(not number) in server password as [ROT13](https://en.wikipedia.org/wiki/ROT13) passcode
-
-[Online ROT13 converter](http://www.rot13.com)
-
-From Python *this* module
-
-For more imformation please see [*ROT13.md*](https://github.com/leon332157/club/blob/master/ROT13.md)
+The client will send a request to the server, which will initiate communication between the two.
+As with the server, the client prints output for each packet sent and received.
